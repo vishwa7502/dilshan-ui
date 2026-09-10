@@ -52,9 +52,9 @@ echo -e "${GREEN}✓ OS: $OS | Arch: $ARCH${NC}"
 echo -e "\n${CYAN}📦 Installing dependencies...${NC}"
 if command -v apt-get &> /dev/null; then
     apt-get update -y > /dev/null 2>&1
-    apt-get install -y wget curl tar > /dev/null 2>&1
+    apt-get install -y wget curl tar build-essential gcc make > /dev/null 2>&1
 elif command -v yum &> /dev/null; then
-    yum install -y wget curl tar > /dev/null 2>&1
+    yum install -y wget curl tar gcc make > /dev/null 2>&1
 fi
 
 # Variables
@@ -104,7 +104,7 @@ build_from_source() {
     git clone https://github.com/$REPO.git dilshan-ui-src
     cd dilshan-ui-src
     
-    CGO_ENABLED=0 go build -o dilshan-x-ui -ldflags="-s -w" 2>&1
+    CGO_ENABLED=1 go build -o dilshan-x-ui -ldflags="-s -w" 2>&1
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}❌ Build failed${NC}"
         exit 1
