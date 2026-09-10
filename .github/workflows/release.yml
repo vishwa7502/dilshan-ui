@@ -23,13 +23,13 @@ jobs:
         
     - name: Create Release Archive
       run: |
-        tar -czvf dilshan-ui-linux-amd64.tar.gz dilshan-x-ui
+        tar -czvf dilshan-x-ui-linux-amd64.tar.gz dilshan-x-ui
         
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dilshan-ui-linux-amd64.tar.gz
+        files: dilshan-x-ui-linux-amd64.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -37,5 +37,5 @@ jobs:
       if: ${{ !startsWith(github.ref, 'refs/tags/') }}
       uses: actions/upload-artifact@v4
       with:
-        name: dilshan-ui-linux-amd64
-        path: dilshan-ui-linux-amd64.tar.gz
+        name: dilshan-x-ui-linux-amd64
+        path: dilshan-x-ui-linux-amd64.tar.gz
