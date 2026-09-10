@@ -151,7 +151,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=$INSTALL_DIR
-ExecStart=$INSTALL_DIR/x-ui
+ExecStart=$INSTALL_DIR/dilshan-x-ui
 Restart=on-failure
 RestartSec=5s
 LimitNOFILE=65535
