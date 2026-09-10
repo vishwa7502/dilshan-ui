@@ -114,13 +114,63 @@ body::after {
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 204, 0.3); }
 
 /* ===== 3. LAYOUT ===== */
+html, body {
+  overflow-x: hidden !important;
+}
+
 .ant-layout {
   background: transparent !important;
+}
+
+/* Content layout offset for fixed sidebar */
+#content-layout {
+  margin-left: 260px !important;
+  transition: margin-left var(--dx-transition) !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+}
+
+/* When sidebar is collapsed (80px) */
+.ant-layout-sider-collapsed ~ #content-layout {
+  margin-left: 80px !important;
 }
 
 .ant-layout-content {
   background: transparent !important;
   padding: 24px !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Prevent any child from causing horizontal overflow */
+.ant-layout-content > * {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* Tabs — scrollable instead of overflowing page */
+.ant-tabs-nav {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+}
+
+.ant-tabs-nav::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Tables — contained within their card */
+.ant-table-wrapper {
+  overflow-x: auto !important;
+}
+
+/* Mobile — no sidebar offset */
+@media (max-width: 768px) {
+  #content-layout {
+    margin-left: 0 !important;
+  }
 }
 
 /* ===== 4. SIDEBAR ===== */
