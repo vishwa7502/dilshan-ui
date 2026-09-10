@@ -74,6 +74,18 @@ go build -o dilshan-x-ui
 
 This project is based on [X-SL](https://github.com/MasterHide/X-SL) (3x-ui fork).
 
+## ⭐ Support
+
+If this project is helpful to you, you may wish to give it a 🌟
+
+### 💰 Donate
+
+| Currency | Network | Address |
+|----------|---------|---------|
+| USDT | TRC20 | `TGQFrDvMXX8usmrfEcXZKgRjnyvVEM2wve` |
+
+Your support helps keep this project alive and maintained! 🙏
+
 ---
 
 **Made with 🛡️ by Dilshan**
