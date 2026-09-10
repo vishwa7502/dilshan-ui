@@ -1,0 +1,346 @@
+{{define "inboundInfoModal"}}
+<a-modal id="inbound-info-modal" v-model="infoModal.visible" title='{{ i18n "pages.inbounds.details"}}' :closable="true" :mask-closable="true" :footer="null" width="600px" :class="themeSwitcher.currentTheme">
+  
+  <!-- Server Details Grid -->
+  <div class="xsl-info-grid">
+    <div class="xsl-info-item">
+      <span class="xsl-info-label">{{ i18n "protocol" }}</span>
+      <span class="xsl-info-value"><a-tag class="tag-protocol">[[ dbInbound.protocol ]]</a-tag></span>
+    </div>
+    <div class="xsl-info-item">
+      <span class="xsl-info-label">{{ i18n "pages.inbounds.address" }}</span>
+      <span class="xsl-info-value">[[ dbInbound.address ]]</span>
+    </div>
+    <div class="xsl-info-item">
+      <span class="xsl-info-label">{{ i18n "pages.inbounds.port" }}</span>
+      <span class="xsl-info-value">[[ dbInbound.port ]]</span>
+    </div>
+    
+    <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "transmission" }}</span>
+        <span class="xsl-info-value"><a-tag class="tag-network">[[ inbound.network ]]</a-tag></span>
+      </div>
+      
+      <template v-if="inbound.isTcp || inbound.isWs || inbound.isHttpupgrade || inbound.isXHTTP">
+        <div class="xsl-info-item">
+          <span class="xsl-info-label">{{ i18n "host" }}</span>
+          <span class="xsl-info-value" v-if="inbound.host">[[ inbound.host ]]</span>
+          <span class="xsl-info-value" v-else><a-tag class="tag-security" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; border-color: rgba(245, 158, 11, 0.2) !important;">{{ i18n "none" }}</a-tag></span>
+        </div>
+        <div class="xsl-info-item">
+          <span class="xsl-info-label">{{ i18n "path" }}</span>
+          <span class="xsl-info-value" v-if="inbound.path">[[ inbound.path ]]</span>
+          <span class="xsl-info-value" v-else><a-tag class="tag-security" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; border-color: rgba(245, 158, 11, 0.2) !important;">{{ i18n "none" }}</a-tag></span>
+        </div>
+      </template>
+
+      <template v-if="inbound.isGrpc">
+        <div class="xsl-info-item">
+          <span class="xsl-info-label">gRPC Service</span>
+          <span class="xsl-info-value">[[ inbound.serviceName ]]</span>
+        </div>
+        <div class="xsl-info-item">
+          <span class="xsl-info-label">Multi Mode</span>
+          <span class="xsl-info-value">[[ inbound.stream.grpc.multiMode ]]</span>
+        </div>
+      </template>
+    </template>
+
+    <div class="xsl-info-item" v-if="dbInbound.hasLink()">
+      <span class="xsl-info-label">{{ i18n "security" }}</span>
+      <span class="xsl-info-value">
+        <a-tag class="tag-security" v-if="inbound.stream.security != 'none'">[[ inbound.stream.security ]]</a-tag>
+        <a-tag class="tag-security" v-else style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; border-color: rgba(239, 68, 68, 0.2) !important;">[[ inbound.stream.security ]]</a-tag>
+      </span>
+    </div>
+
+    <template v-if="inbound.stream.security != 'none' && dbInbound.hasLink()">
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "domainName" }}</span>
+        <span class="xsl-info-value" v-if="inbound.serverName">[[ inbound.serverName ]]</span>
+        <span class="xsl-info-value" v-else><a-tag class="tag-security" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; border-color: rgba(245, 158, 11, 0.2) !important;">{{ i18n "none" }}</a-tag></span>
+      </div>
+    </template>
+
+    <template v-if="dbInbound.isSS">
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "encryption" }}</span>
+        <span class="xsl-info-value"><a-tag class="tag-network">[[ inbound.settings.method ]]</a-tag></span>
+      </div>
+      <div class="xsl-info-item" v-if="inbound.isSS2022">
+        <span class="xsl-info-label">{{ i18n "password" }}</span>
+        <span class="xsl-info-value">[[ inbound.settings.password ]]</span>
+      </div>
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "pages.inbounds.network" }}</span>
+        <span class="xsl-info-value"><a-tag class="tag-network">[[ inbound.settings.network ]]</a-tag></span>
+      </div>
+    </template>
+  </div>
+
+  <!-- Client Details Section -->
+  <template v-if="infoModal.clientSettings">
+    <a-divider style="border-color: var(--dx-border); margin: 24px 0 16px;">{{ i18n "pages.inbounds.client" }}</a-divider>
+    <div class="xsl-info-grid">
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "pages.inbounds.email" }}</span>
+        <span class="xsl-info-value" v-if="infoModal.clientSettings.email">[[ infoModal.clientSettings.email ]]</span>
+        <span class="xsl-info-value" v-else><a-tag class="tag-security" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; border-color: rgba(239, 68, 68, 0.2) !important;">{{ i18n "none" }}</a-tag></span>
+      </div>
+      <div class="xsl-info-item" v-if="infoModal.clientSettings.id">
+        <span class="xsl-info-label">ID</span>
+        <span class="xsl-info-value">[[ infoModal.clientSettings.id ]]</span>
+      </div>
+      <div class="xsl-info-item" v-if="dbInbound.isVMess">
+        <span class="xsl-info-label">{{ i18n "security" }}</span>
+        <span class="xsl-info-value">[[ infoModal.clientSettings.security ]]</span>
+      </div>
+      <div class="xsl-info-item" v-if="infoModal.inbound.canEnableTlsFlow()">
+        <span class="xsl-info-label">Flow</span>
+        <span class="xsl-info-value" v-if="infoModal.clientSettings.flow">[[ infoModal.clientSettings.flow ]]</span>
+        <span class="xsl-info-value" v-else><a-tag class="tag-security" style="background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; border-color: rgba(245, 158, 11, 0.2) !important;">{{ i18n "none" }}</a-tag></span>
+      </div>
+      <div class="xsl-info-item" v-if="infoModal.clientSettings.password">
+        <span class="xsl-info-label">{{ i18n "password" }}</span>
+        <span class="xsl-info-value">[[ infoModal.clientSettings.password ]]</span>
+      </div>
+      <div class="xsl-info-item">
+        <span class="xsl-info-label">{{ i18n "status" }}</span>
+        <span class="xsl-info-value">
+          <a-tag class="tag-security" v-if="isEnable">{{ i18n "enabled" }}</a-tag>
+          <a-tag class="tag-security" v-else style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; border-color: rgba(239, 68, 68, 0.2) !important;">{{ i18n "disabled" }}</a-tag>
+          <a-tag class="tag-security" v-if="!isActive" style="background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; border-color: rgba(239, 68, 68, 0.2) !important;">{{ i18n "depleted" }}</a-tag>
+        </span>
+      </div>
+      <div class="xsl-info-item" v-if="infoModal.clientStats">
+        <span class="xsl-info-label">{{ i18n "usage" }}</span>
+        <span class="xsl-info-value">[[ sizeFormat(infoModal.clientStats.up + infoModal.clientStats.down) ]] (↑[[ sizeFormat(infoModal.clientStats.up) ]] / ↓[[ sizeFormat(infoModal.clientStats.down) ]])</span>
+      </div>
+      <div class="xsl-info-item" v-if="infoModal.clientSettings.comment">
+        <span class="xsl-info-label">{{ i18n "comment" }}</span>
+        <span class="xsl-info-value">[[ infoModal.clientSettings.comment ]]</span>
+      </div>
+      <div class="xsl-info-item" v-if="app.ipLimitEnable">
+        <span class="xsl-info-label">{{ i18n "pages.inbounds.IPLimit" }}</span>
+        <span class="xsl-info-value">[[ infoModal.clientSettings.limitIp ]] IPs</span>
+      </div>
+      <div class="xsl-info-item" v-if="app.ipLimitEnable">
+        <span class="xsl-info-label">{{ i18n "pages.inbounds.IPLimitlog" }}</span>
+        <span class="xsl-info-value" style="display: flex; align-items: center; gap: 8px;">
+          [[ infoModal.clientIps ]]
+          <a-icon type="sync" :spin="refreshing" @click="refreshIPs" style="cursor: pointer; color: var(--dx-primary);"></a-icon>
+          <a-tooltip title='{{ i18n "pages.inbounds.IPLimitlogclear" }}'>
+            <a-icon type="delete" @click="clearClientIps" style="cursor: pointer; color: var(--dx-danger);"></a-icon>
+          </a-tooltip>
+        </span>
+      </div>
+    </div>
+
+    <!-- Traffic & Expiry Stats -->
+    <div class="xsl-stats-row">
+      <div class="xsl-stat-block">
+        <span class="xsl-stat-block-label">{{ i18n "remained" }}</span>
+        <span class="xsl-stat-block-value" v-if="infoModal.clientStats && infoModal.clientSettings.totalGB > 0">[[ getRemStats() ]]</span>
+        <span class="xsl-stat-block-value" v-else>∞</span>
+      </div>
+      <div class="xsl-stat-block">
+        <span class="xsl-stat-block-label">{{ i18n "pages.inbounds.totalFlow" }}</span>
+        <span class="xsl-stat-block-value" v-if="infoModal.clientSettings.totalGB > 0">[[ sizeFormat(infoModal.clientSettings.totalGB) ]]</span>
+        <span class="xsl-stat-block-value" v-else>∞</span>
+      </div>
+      <div class="xsl-stat-block">
+        <span class="xsl-stat-block-label">{{ i18n "pages.inbounds.expireDate" }}</span>
+        <span class="xsl-stat-block-value" v-if="infoModal.clientSettings.expiryTime > 0">
+          <template v-if="app.datepicker === 'gregorian'">[[ DateUtil.formatMillis(infoModal.clientSettings.expiryTime) ]]</template>
+          <template v-else>[[ DateUtil.convertToJalalian(moment(infoModal.clientSettings.expiryTime)) ]]</template>
+        </span>
+        <span class="xsl-stat-block-value" v-else-if="infoModal.clientSettings.expiryTime < 0">[[ infoModal.clientSettings.expiryTime / -86400000 ]] {{ i18n "pages.client.days" }}</span>
+        <span class="xsl-stat-block-value" v-else>∞</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- Subscription Links -->
+  <template v-if="app.subSettings.enable && infoModal.clientSettings && infoModal.clientSettings.subId">
+    <a-divider style="border-color: var(--dx-border); margin: 24px 0 16px;">Subscription</a-divider>
+    <div class="xsl-link-row">
+      <div class="xsl-link-tag"><a-tag class="tag-protocol">Sub Link</a-tag></div>
+      <a :href="[[ infoModal.subLink ]]" target="_blank" class="xsl-link-text">[[ infoModal.subLink ]]</a>
+      <a-tooltip title='{{ i18n "copy" }}'>
+        <a-button class="xsl-copy-btn" shape="circle" size="small" :id="'copy-sub-link'" @click="copyToClipboard('copy-sub-link', infoModal.subLink)">
+          <iconify-icon icon="mdi:content-copy" width="14"></iconify-icon>
+        </a-button>
+      </a-tooltip>
+    </div>
+    <div class="xsl-link-row">
+      <div class="xsl-link-tag"><a-tag class="tag-protocol">Json Link</a-tag></div>
+      <a :href="[[ infoModal.subJsonLink ]]" target="_blank" class="xsl-link-text">[[ infoModal.subJsonLink ]]</a>
+      <a-tooltip title='{{ i18n "copy" }}'>
+        <a-button class="xsl-copy-btn" shape="circle" size="small" :id="'copy-subJson-link'" @click="copyToClipboard('copy-subJson-link', infoModal.subJsonLink)">
+          <iconify-icon icon="mdi:content-copy" width="14"></iconify-icon>
+        </a-button>
+      </a-tooltip>
+    </div>
+  </template>
+
+  <!-- Telegram -->
+  <template v-if="app.tgBotEnable && infoModal.clientSettings && infoModal.clientSettings.tgId">
+    <a-divider style="border-color: var(--dx-border); margin: 24px 0 16px;">Telegram</a-divider>
+    <div class="xsl-link-row">
+      <div class="xsl-link-tag"><a-tag class="tag-network">Chat ID</a-tag></div>
+      <span class="xsl-link-text">[[ infoModal.clientSettings.tgId ]]</span>
+      <a-tooltip title='{{ i18n "copy" }}'>
+        <a-button class="xsl-copy-btn" shape="circle" size="small" :id="'copy-tg-link'" @click="copyToClipboard('copy-tg-link', infoModal.clientSettings.tgId)">
+          <iconify-icon icon="mdi:content-copy" width="14"></iconify-icon>
+        </a-button>
+      </a-tooltip>
+    </div>
+  </template>
+
+  <!-- Connection URLs -->
+  <template v-if="dbInbound.hasLink()">
+    <a-divider style="border-color: var(--dx-border); margin: 24px 0 16px;">Connection URLs</a-divider>
+    <div v-for="(link,index) in infoModal.links" :key="index" class="xsl-link-row">
+      <div class="xsl-link-tag"><a-tag class="tag-network">[[ link.remark ]]</a-tag></div>
+      <code class="xsl-link-text">[[ link.link ]]</code>
+      <a-tooltip title='{{ i18n "copy" }}'>
+        <a-button class="xsl-copy-btn" shape="circle" size="small" :id="'copy-url-link-'+index" @click="copyToClipboard('copy-url-link-'+index, link.link)">
+          <iconify-icon icon="mdi:content-copy" width="14"></iconify-icon>
+        </a-button>
+      </a-tooltip>
+    </div>
+  </template>
+
+</a-modal>
+
+<script>
+  function refreshIPs(email) {
+    return HttpUtil.post(`/panel/inbound/clientIps/${email}`).then((msg) => {
+      if (msg.success) {
+        try {
+          return JSON.parse(msg.obj).join(', ');
+        } catch (e) {
+          return msg.obj;
+        }
+      }
+    });
+  }
+
+  const infoModal = {
+    visible: false,
+    inbound: new Inbound(),
+    dbInbound: new DBInbound(),
+    clientSettings: null,
+    clientStats: [],
+    upStats: 0,
+    downStats: 0,
+    clipboard: null,
+    links: [],
+    index: null,
+    isExpired: false,
+    subLink: '',
+    subJsonLink: '',
+    clientIps: '',
+    show(dbInbound, index) {
+      this.index = index;
+      this.inbound = dbInbound.toInbound();
+      this.dbInbound = new DBInbound(dbInbound);
+      this.clientSettings = this.inbound.clients ? this.inbound.clients[index] : null;
+      this.isExpired = this.inbound.clients ? this.inbound.isExpiry(index) : this.dbInbound.isExpiry;
+      this.clientStats = this.inbound.clients ? this.dbInbound.clientStats.find(row => row.email === this.clientSettings.email) : [];
+
+      if (app.ipLimitEnable && this.clientSettings.limitIp) {
+        refreshIPs(this.clientStats.email).then((ips) => {
+          this.clientIps = ips;
+        })
+      }
+      if (this.inbound.protocol == Protocols.WIREGUARD) {
+        this.links = this.inbound.genInboundLinks(dbInbound.remark).split('\r\n')
+      } else {
+        this.links = this.inbound.genAllLinks(this.dbInbound.remark, app.remarkModel, this.clientSettings);
+      }
+      if (this.clientSettings) {
+        if (this.clientSettings.subId) {
+          this.subLink = this.genSubLink(this.clientSettings.subId);
+          this.subJsonLink = this.genSubJsonLink(this.clientSettings.subId);
+        }
+      }
+      this.visible = true;
+    },
+    close() {
+      infoModal.visible = false;
+    },
+    genSubLink(subID) {
+      return app.subSettings.subURI + subID;
+    },
+    genSubJsonLink(subID) {
+      return app.subSettings.subJsonURI + subID;
+    }
+  };
+  const infoModalApp = new Vue({
+    delimiters: ['[[', ']]'],
+    el: '#inbound-info-modal',
+    data: {
+      infoModal,
+      refreshing: false,
+      get dbInbound() {
+        return this.infoModal.dbInbound;
+      },
+      get inbound() {
+        return this.infoModal.inbound;
+      },
+      get isActive() {
+        if (infoModal.clientStats) {
+          return infoModal.clientStats.enable;
+        }
+        return true;
+      },
+      get isEnable() {
+        if (infoModal.clientSettings) {
+          return infoModal.clientSettings.enable;
+        }
+        return infoModal.dbInbound.isEnable;
+      },
+    },
+    methods: {
+      copyToClipboard(elementId, content) {
+        this.infoModal.clipboard = new ClipboardJS('#' + elementId, {
+          text: () => content,
+        });
+        this.infoModal.clipboard.on('success', () => {
+          app.$message.success('{{ i18n "copied" }}')
+          this.infoModal.clipboard.destroy();
+        });
+      },
+      statsColor(stats) {
+        return usageColor(stats.up + stats.down, app.trafficDiff, stats.total);
+      },
+      getRemStats() {
+        remained = this.infoModal.clientStats.total - this.infoModal.clientStats.up - this.infoModal.clientStats.down;
+        return remained > 0 ? sizeFormat(remained) : '-';
+      },
+      refreshIPs() {
+        this.refreshing = true;
+        refreshIPs(this.infoModal.clientStats.email)
+          .then((ips) => {
+            this.infoModal.clientIps = ips;
+          })
+          .finally(() => {
+            this.refreshing = false;
+          });
+      },
+      clearClientIps() {
+        HttpUtil.post(`/panel/inbound/clearClientIps/${this.infoModal.clientStats.email}`)
+          .then((msg) => {
+            if (!msg.success) {
+              return;
+            }
+            this.infoModal.clientIps = 'No IP Record';
+          })
+          .catch(() => {});
+      },
+    },
+  });
+</script>
+{{end}}

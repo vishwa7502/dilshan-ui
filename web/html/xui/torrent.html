@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .}}
+<body>
+<a-layout id="app" v-cloak :class="themeSwitcher.currentTheme">
+  {{ template "commonSider" . }}
+  <a-layout id="content-layout">
+    <a-layout-content>
+      <a-spin :spinning="spinning" tip="Loading Dashboard...">
+        <div class="xsl-dash-container">
+
+          <!-- Premium Header -->
+          <div class="xsl-dash-header" data-aos="fade-down">
+            <div>
+              <h1>Torrent Blocker</h1>
+              <p>Manage network traffic and block public torrent trackers</p>
+            </div>
+            <div class="xsl-dash-actions" v-if="status.installed">
+              <a-button type="danger" shape="round" @click="uninstall" :loading="uninstalling">
+                <iconify-icon icon="mdi:trash-can-outline" width="18"></iconify-icon> Uninstall Tool
+              </a-button>
+            </div>
+          </div>
+
+          <!-- Tabs Container -->
+          <a-card class="modern-card xsl-torrent-card" data-aos="fade-up">
+            <a-tabs default-active-key="2" class="xsl-settings-tabs">
+
+              <!-- Sub Page 1: Live Traffic Block -->
+              <a-tab-pane key="1">
+                <span slot="tab">
+                  <iconify-icon icon="mdi:radar" width="16" style="vertical-align: -2px; margin-right: 4px;"></iconify-icon>
+                  Live Traffic Block
+                </span>
+                <div class="xsl-coming-soon">
+                  <div class="xsl-coming-soon-icon">
+                    <iconify-icon icon="mdi:progress-clock" width="72" style="color: var(--dx-primary);"></iconify-icon>
+                  </div>
+                  <h2 class="xsl-coming-soon-title">Coming Soon</h2>
+                  <p class="xsl-coming-soon-desc">
+                    Real-time deep packet inspection and dynamic live blocking is currently under development. Stay tuned for this premium feature!
+                  </p>
+                  <a-tag color="processing" style="font-size: 14px; padding: 4px 16px; border-radius: 12px;">
+                    <iconify-icon icon="mdi:flash-outline" width="14"></iconify-icon> Under Development
+                  </a-tag>
+                </div>
+              </a-tab-pane>
+
+              <!-- Sub Page 2: Public Torrent Block -->
+              <a-tab-pane key="2">
+                <span slot="tab">
+                  <iconify-icon icon="mdi:shield-lock-outline" width="16" style="vertical-align: -2px; margin-right: 4px;"></iconify-icon>
+                  Public Torrent Block
+                </span>
+
+                <!-- Not Installed View -->
+                <div v-if="!status.installed && !spinning" class="xsl-not-installed">
+                  <div class="xsl-not-installed-icon">
+                    <iconify-icon icon="mdi:shield-off-outline" width="72" style="color: var(--dx-danger);"></iconify-icon>
+                  </div>
+                  <h2 class="xsl-not-installed-title">Tool Not Installed</h2>
+                  <p class="xsl-not-installed-desc">
+                    Install the backend tool to start blocking public torrent trackers, domains, and IPs using iptables and hosts sinkholing.
+                  </p>
+                  <a-button type="primary" shape="round" size="large" @click="install" :loading="installing">
+                    <iconify-icon icon="mdi:download-network-outline" width="20"></iconify-icon>
+                    <span v-if="!installing">Install Now</span>
+                    <span v-else>Installing Backend...</span>
+                  </a-button>
+                </div>
+
+                <!-- Installed View -->
+                <div v-if="status.installed" class="xsl-torrent-content">
+
+                  <!-- Toolbar -->
+                  <div class="xsl-torrent-toolbar">
+                    <h3 class="xsl-torrent-toolbar-title">
+                      <iconify-icon icon="mdi:format-list-bulleted" width="20" style="vertical-align: -3px; margin-right: 6px; color: var(--dx-primary);"></iconify-icon>
+                      Blocked Entries
+                      <a-tag color="blue" style="margin-left: 8px; border-radius: 8px;">[[ status.trackers.length ]]</a-tag>
+                    </h3>
+                    <!-- FIX: Use separate input + button instead of a-input-search for reliability -->
+                    <div class="xsl-torrent-add-form">
+                      <a-input
+                        placeholder="Enter domain or IP (e.g. 1337x.to)"
+                        v-model="newEntry"
+                        @keyup.enter="addTracker"
+                        size="large"
+                        allow-clear
+                        style="flex: 1; min-width: 0;"
+                      >
+                        <a-icon slot="prefix" type="plus" />
+                      </a-input>
+                      <a-button
+                        type="primary"
+                        size="large"
+                        @click="addTracker"
+                        :loading="adding"
+                        :disabled="!newEntry || !newEntry.trim()"
+                      >
+                        <iconify-icon icon="mdi:plus" width="18"></iconify-icon>
+                        <span class="add-btn-text">Add Block</span>
+                      </a-button>
+                    </div>
+                  </div>
+
+                  <!-- Premium Table -->
+                  <a-table
+                    :columns="columns"
+                    :data-source="tableData"
+                    rowKey="entry"
+                    :pagination="{ pageSize: 10, hideOnSinglePage: true }"
+                    class="xsl-torrent-table"
+                  >
+                    <template slot="entry" slot-scope="text, record">
+                      <div class="xsl-entry-cell">
+                        <iconify-icon icon="mdi:earth" width="18" style="color: var(--dx-text-muted); flex-shrink: 0;"></iconify-icon>
+                        <span class="xsl-entry-text">[[ text ]]</span>
+                      </div>
+                    </template>
+                    <template slot="status" slot-scope="text, record">
+                      <a-tag color="success" class="xsl-blocked-tag">
+                        <iconify-icon icon="mdi:check-circle-outline" width="12" style="margin-right: 2px;"></iconify-icon>
+                        Blocked
+                      </a-tag>
+                    </template>
+                    <template slot="action" slot-scope="text, record">
+                      <a-button
+                        type="danger"
+                        size="small"
+                        shape="round"
+                        @click="removeTracker(record.entry)"
+                        :loading="removing === record.entry"
+                      >
+                        <iconify-icon icon="mdi:delete-outline" width="16"></iconify-icon>
+                        <span class="remove-btn-text">Remove</span>
+                      </a-button>
+                    </template>
+                  </a-table>
+                </div>
+              </a-tab-pane>
+
+            </a-tabs>
+          </a-card>
+
+        </div>
+      </a-spin>
+    </a-layout-content>
+  </a-layout>
+</a-layout>
+
+{{template "js" .}}
+{{template "component/themeSwitcher" .}}
+<script>
+  const app = new Vue({
+    delimiters: ['[[', ']]'],
+    el: '#app',
+    data: {
+      siderDrawer,
+      sidebar,
+      themeSwitcher,
+      spinning: false,
+      installing: false,
+      uninstalling: false,
+      adding: false,
+      removing: null,
+      status: { installed: false, trackers: [] },
+      newEntry: '',
+      columns: [
+        { title: 'Domain / IP Address', dataIndex: 'entry', key: 'entry', scopedSlots: { customRender: 'entry' } },
+        { title: 'Status', key: 'status', scopedSlots: { customRender: 'status' }, width: 120, align: 'center' },
+        { title: 'Action', key: 'action', scopedSlots: { customRender: 'action' }, width: 150, align: 'right' }
+      ]
+    },
+    computed: {
+      tableData() {
+        return this.status.trackers.map(t => ({ entry: t }));
+      }
+    },
+    methods: {
+      async getStatus() {
+        const msg = await HttpUtil.post('/panel/torrent/status');
+        if (msg.success) {
+          this.status = msg.obj;
+        }
+      },
+      async install() {
+        this.installing = true;
+        const msg = await HttpUtil.post('/panel/torrent/install');
+        this.installing = false;
+        if (msg.success) {
+          app.$message.success('Torrent Blocker installed successfully');
+          await this.getStatus();
+        } else {
+          app.$message.error(msg.msg || 'Installation failed');
+        }
+      },
+      async uninstall() {
+        this.$confirm({
+          title: 'Uninstall Torrent Blocker',
+          content: 'Are you sure you want to remove the tool and unblock all domains?',
+          okText: 'Uninstall',
+          okType: 'danger',
+          cancelText: 'Cancel',
+          onOk: async () => {
+            this.uninstalling = true;
+            const msg = await HttpUtil.post('/panel/torrent/uninstall');
+            this.uninstalling = false;
+            if (msg.success) {
+              app.$message.success('Uninstalled successfully');
+              await this.getStatus();
+            } else {
+              app.$message.error(msg.msg || 'Uninstall failed');
+            }
+          }
+        });
+      },
+      async addTracker() {
+        if (!this.newEntry || !this.newEntry.trim()) {
+          app.$message.warning('Please enter a domain or IP address');
+          return;
+        }
+        this.adding = true;
+        const msg = await HttpUtil.post('/panel/torrent/add', { entry: this.newEntry.trim() });
+        this.adding = false;
+        if (msg.success) {
+          app.$message.success(msg.msg || 'Tracker blocked successfully');
+          this.newEntry = '';
+          await this.getStatus();
+        } else {
+          app.$message.error(msg.msg || 'Failed to add tracker');
+        }
+      },
+      async removeTracker(entry) {
+        this.removing = entry;
+        const msg = await HttpUtil.post('/panel/torrent/remove', { entry: entry });
+        this.removing = null;
+        if (msg.success) {
+          app.$message.success(msg.msg || 'Tracker removed');
+          await this.getStatus();
+        } else {
+          app.$message.error(msg.msg || 'Failed to remove tracker');
+        }
+      }
+    },
+    async mounted() {
+      document.title = "Torrent Blocker - Dilshan X-UI Panel";
+      this.spinning = true;
+      await this.getStatus();
+      this.spinning = false;
+    }
+  });
+</script>
+</body>
+</html>

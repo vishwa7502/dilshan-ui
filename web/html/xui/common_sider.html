@@ -1,0 +1,266 @@
+{{define "menuItems"}}
+<!-- Dashboard Menu Item -->
+<a-menu-item key="{{ .base_path }}panel/" class="dx-menu-item">
+  <iconify-icon icon="mdi:view-dashboard-outline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">{{ i18n "menu.dashboard"}}</span>
+</a-menu-item>
+
+<!-- Inbounds Menu Item -->
+<a-menu-item key="{{ .base_path }}panel/inbounds" class="dx-menu-item">
+  <iconify-icon icon="mdi:arrow-down-bold-circle-outline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">{{ i18n "menu.inbounds"}}</span>
+</a-menu-item>
+
+<!-- Settings Menu Item -->
+<a-menu-item key="{{ .base_path }}panel/settings" class="dx-menu-item">
+  <iconify-icon icon="mdi:cog-outline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">{{ i18n "menu.settings"}}</span>
+</a-menu-item>
+
+<!-- Xray Menu Item -->
+<a-menu-item key="{{ .base_path }}panel/xray" class="dx-menu-item">
+  <iconify-icon icon="mdi:flask-outline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">{{ i18n "menu.xray"}}</span>
+</a-menu-item>
+
+<!-- Traffic Manager -->
+<a-menu-item key="{{ .base_path }}panel/traffic/" class="dx-menu-item">
+  <iconify-icon icon="mdi:chart-areaspline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">Traffic Manager</span>
+</a-menu-item>
+
+<!-- Torrent Blocker -->
+<a-menu-item key="{{ .base_path }}panel/torrent/" class="dx-menu-item">
+  <iconify-icon icon="mdi:shield-lock-outline" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">Torrent Blocker</span>
+</a-menu-item>
+
+<!-- Panel Setup -->
+<a-menu-item key="{{ .base_path }}panel/terminal/" class="dx-menu-item">
+  <iconify-icon icon="mdi:console-line" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">Panel Setup</span>
+</a-menu-item>
+
+<!-- Logout -->
+<a-menu-item key="{{ .base_path }}logout" class="dx-menu-item dx-logout">
+  <iconify-icon icon="mdi:logout" class="dx-menu-icon"></iconify-icon>
+  <span class="dx-menu-text">{{ i18n "menu.logout"}}</span>
+</a-menu-item>
+{{end}}
+
+{{define "commonSider"}}
+<style>
+  /* Dilshan X-UI Sidebar */
+  .dx-sider-header {
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    min-height: 72px;
+  }
+
+  .dx-brand-mark {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0, 229, 204, 0.15), rgba(0, 144, 217, 0.1));
+    border: 1px solid rgba(0, 229, 204, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(0, 229, 204, 0.08);
+  }
+
+  .dx-brand-info {
+    overflow: hidden;
+    transition: opacity 0.3s ease, width 0.3s ease;
+  }
+
+  .dx-brand-title {
+    font-size: 16px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #00E5CC, #0090D9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .dx-brand-version {
+    font-size: 11px;
+    color: #3D4F6F;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Menu Items */
+  .dx-menu-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 0 16px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    margin: 2px 0 !important;
+    border-radius: 10px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #6B7A99 !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+  }
+
+  .dx-menu-item:hover {
+    color: #E8ECF4 !important;
+    background: rgba(0, 229, 204, 0.06) !important;
+  }
+
+  .dx-menu-item.ant-menu-item-selected {
+    color: #00E5CC !important;
+    background: rgba(0, 229, 204, 0.1) !important;
+    font-weight: 600 !important;
+  }
+
+  .dx-menu-item.ant-menu-item-selected::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 8px; bottom: 8px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, #00E5CC, #0090D9);
+  }
+
+  .dx-menu-icon {
+    font-size: 20px !important;
+    opacity: 0.6;
+    transition: all 0.25s ease !important;
+    flex-shrink: 0;
+  }
+
+  .dx-menu-item:hover .dx-menu-icon,
+  .dx-menu-item.ant-menu-item-selected .dx-menu-icon {
+    opacity: 1;
+  }
+
+  .dx-menu-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Logout special */
+  .dx-logout {
+    color: #ef4444 !important;
+    opacity: 0.7;
+  }
+  .dx-logout:hover {
+    color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    opacity: 1;
+  }
+
+  /* Collapse trigger */
+  .dx-sider-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    color: #3D4F6F;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-top: auto;
+  }
+
+  .dx-sider-trigger:hover {
+    color: #00E5CC;
+    background: rgba(0, 229, 204, 0.04);
+  }
+
+  /* Mobile trigger */
+  #xsl-mobile-trigger,
+  #dx-mobile-trigger {
+    position: fixed !important;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999 !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #00E5CC, #0090D9) !important;
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(0, 229, 204, 0.35) !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #0A0E17 !important;
+  }
+
+  @media (max-width: 768px) {
+    #xsl-mobile-trigger,
+    #dx-mobile-trigger {
+      display: flex !important;
+    }
+  }
+</style>
+
+<!-- Desktop Collapsible Sidebar -->
+<a-layout-sider id="xsl-sider" v-model="sidebar.collapsed" :trigger="null" collapsible :width="260" :collapsedWidth="80">
+  <div class="dx-sider-header">
+    <div class="dx-brand-mark">🛡️</div>
+    <div class="dx-brand-info" v-show="!sidebar.collapsed">
+      <div class="dx-brand-title">Dilshan X-UI</div>
+      <div class="dx-brand-version">v2.6.0 • Xray Panel</div>
+    </div>
+  </div>
+
+  <a-menu id="xsl-menu" mode="inline" theme="dark" :selected-keys="['{{ .request_uri }}']" @click="({key}) => key.startsWith('http') ? window.open(key) : location.href = key">
+    {{template "menuItems" .}}
+  </a-menu>
+
+  <!-- Collapse Trigger -->
+  <div class="dx-sider-trigger" @click="sidebar.toggle()">
+    <iconify-icon :icon="sidebar.collapsed ? 'mdi:chevron-double-right' : 'mdi:chevron-double-left'" width="18"></iconify-icon>
+    <span v-show="!sidebar.collapsed">Collapse</span>
+  </div>
+</a-layout-sider>
+
+<!-- Mobile Floating Button -->
+<a-button id="dx-mobile-trigger" type="primary" shape="circle" @click="siderDrawer.change()">
+  <iconify-icon icon="mdi:menu" width="22"></iconify-icon>
+</a-button>
+
+<!-- Mobile Drawer Menu -->
+<a-drawer placement="left" :closable="false" @close="siderDrawer.close()" :visible="siderDrawer.visible" width="260px" :body-style="{ padding: '0', background: '#0A0E17' }">
+  <div class="dx-sider-header">
+    <div class="dx-brand-mark">🛡️</div>
+    <div class="dx-brand-info">
+      <div class="dx-brand-title">Dilshan X-UI</div>
+      <div class="dx-brand-version">v2.6.0 • Xray Panel</div>
+    </div>
+  </div>
+  <a-menu id="xsl-menu" mode="inline" theme="dark" :selected-keys="['{{ .request_uri }}']" @click="({key}) => { key.startsWith('http') ? window.open(key) : location.href = key; siderDrawer.close(); }">
+    {{template "menuItems" .}}
+  </a-menu>
+</a-drawer>
+
+<script>
+  const siderDrawer = {
+    visible: false,
+    show() { this.visible = true; },
+    close() { this.visible = false; },
+    change() { this.visible = !this.visible; },
+  };
+  const sidebar = {
+    collapsed: false,
+    toggle() { this.collapsed = !this.collapsed; }
+  };
+</script>
+{{end}}

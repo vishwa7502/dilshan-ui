@@ -1,0 +1,52 @@
+{{define "component/themeSwitchTemplate"}}
+<template>
+  <span style="display: none;"></span>
+</template>
+{{end}}
+
+{{define "component/themeSwitchTemplateLogin"}}
+<template>
+  <span style="display: none;"></span>
+</template>
+{{end}}
+
+{{define "component/themeSwitcher"}}
+<script>
+  function createThemeSwitcher() {
+    // Force Dark Mode
+    const isDarkTheme = true;
+    const isUltra = false;
+    document.documentElement.removeAttribute('data-theme');
+    
+    const theme = 'dark';
+    document.querySelector('body').setAttribute('class', theme);
+    
+    return {
+      animationsOff() {},
+      animationsOffUltra() {},
+      isDarkTheme,
+      isUltra,
+      get currentTheme() {
+        return 'dark';
+      },
+      toggleTheme() {},
+      toggleUltra() {}
+    };
+  }
+  const themeSwitcher = createThemeSwitcher();
+  Vue.component('theme-switch', {
+    props: [],
+    template: `{{template "component/themeSwitchTemplate"}}`,
+    data: () => ({
+      themeSwitcher
+    })
+  });
+  Vue.component('theme-switch-login', {
+    props: [],
+    template: `{{template "component/themeSwitchTemplateLogin"}}`,
+    data: () => ({
+      themeSwitcher
+    })
+  });
+</script>
+{{end}}
